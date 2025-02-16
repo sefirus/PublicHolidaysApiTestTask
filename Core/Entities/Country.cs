@@ -13,8 +13,8 @@ public class Country
     /// ISO 3166-1 alpha-2 country code.
     /// </summary>
     public string CountryCode2Digit { get; set; }
-
     public string FullName { get; set; }
     public DateTime FromDate { get; set; }
     public DateTime ToDate { get; set; }
+    public List<Holiday> Holidays { get; set; } =  new List<Holiday>();
 }

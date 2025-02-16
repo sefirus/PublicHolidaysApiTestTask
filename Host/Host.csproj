@@ -5,14 +5,20 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>PublicHolidaysApiTestTask</RootNamespace>
+        <UserSecretsId>e876d4f4-5420-4710-8025-d34f47de1ac0</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Application\Application.csproj" />
+      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
       <ProjectReference Include="..\WebApi\WebApi.csproj" />
     </ItemGroup>
 
