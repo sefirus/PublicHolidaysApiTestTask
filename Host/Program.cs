@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
+using Core.Interfaces;
 using DataAccess;
+using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using PublicHolidaysApiTestTask;
 using WebApi.Controllers;
@@ -26,6 +28,8 @@ builder.Services
         jsonOptions.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     })
     .AddApplicationPart(typeof(HolidayScheduleController).Assembly);
+
+builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddHttpClient();
 
