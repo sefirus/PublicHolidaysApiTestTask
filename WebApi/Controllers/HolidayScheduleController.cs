@@ -14,9 +14,9 @@ public class HolidayScheduleController : ControllerBase
         _externalHolidayApiService = externalHolidayApiService;
     }
 
-    // [HttpGet]
-    // public async Task<IActionResult> Get()
-    // {
-    //     return Ok(await _externalHolidayApiService.GetHolidaysAsync("ua", 2015, 2020));
-    // }
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        return Ok(await _externalHolidayApiService.GetCountries());
+    }
 }

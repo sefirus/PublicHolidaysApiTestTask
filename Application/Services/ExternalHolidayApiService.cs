@@ -17,13 +17,33 @@ public class ExternalHolidayApiService : IExternalHolidayApiService
         _httpClientFactory = httpClientFactory;
         _configuration = configuration;
     }
-    
-    public async Task<List<ExternalHolidayViewModel>> GetHolidaysAsync(string countryCode, int startYear, int endYear)
+
+    public async Task<List<ExternalCountryViewModel>> GetCountries()
     {
         var httpClient = _httpClientFactory.CreateClient();
         var baseUrl = _configuration["ExternalHolidayApi:BaseUrl"];
-        var holidayFOrDateRangeEndpoint = _configuration["ExternalHolidayApi:getHolidaysForDateRange"];
-        var externalApiUrl = $"{baseUrl}/{holidayFOrDateRangeEndpoint}?fromDate={startYear}-01-01&toDate={endYear}-12-31&country={countryCode}&holidayType=all";
+        var supportedCountriesEndpoint = _configuration["ExternalHolidayApi:GetSupportedCountriesEndpoint"];
+        var externalApiUrl = $"{baseUrl}/{supportedCountriesEndpoint}";
+        var response = await httpClient.GetAsync(externalApiUrl);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        if (response.IsSuccessStatusCode)
+        {
+            var holidays = JsonSerializer.Deserialize<List<ExternalCountryViewModel>>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            return holidays;
+        }
+
+        throw new Exception($"Unexpected response status code {response.StatusCode}.");    
+    }
+
+    public async Task<List<ExternalHolidayViewModel>> GetHolidays(string countryCode, int startYear, int endYear)
+    {
+        var httpClient = _httpClientFactory.CreateClient();
+        var baseUrl = _configuration["ExternalHolidayApi:BaseUrl"];
+        var holidayForDateRangeEndpoint = _configuration["ExternalHolidayApi:GetHolidaysForDateRangeEndpoint"];
+        var externalApiUrl = $"{baseUrl}/{holidayForDateRangeEndpoint}?fromDate={startYear}-01-01&toDate={endYear}-12-31&country={countryCode}&holidayType=all";
         var response = await httpClient.GetAsync(externalApiUrl);
         var responseContent = await response.Content.ReadAsStringAsync();
         if (response.IsSuccessStatusCode)
