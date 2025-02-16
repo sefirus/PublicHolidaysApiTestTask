@@ -7,16 +7,16 @@ namespace WebApi.Controllers;
 [Route("api/")]
 public class HolidayScheduleController : ControllerBase
 {
-    private readonly IExternalHolidayApiService _externalHolidayApiService;
+    private readonly ICountryService _service;
 
-    public HolidayScheduleController(IExternalHolidayApiService externalHolidayApiService)
+    public HolidayScheduleController(ICountryService externalHolidayApiService)
     {
-        _externalHolidayApiService = externalHolidayApiService;
+        _service = externalHolidayApiService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        return Ok(await _externalHolidayApiService.GetCountries());
+        return Ok(await _service.GetAllCountriesAsync());
     }
 }

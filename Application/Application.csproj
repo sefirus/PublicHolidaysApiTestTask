@@ -11,7 +11,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="ISO3166" Version="1.0.4" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.EntityFrameworkCore">
+        <HintPath>..\..\..\.nuget\packages\microsoft.entityframeworkcore\9.0.2\lib\net8.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
