@@ -11,5 +11,5 @@ public interface ICountryService
     /// </summary>
     public Task<List<CountryViewModel>> GetAllCountries();
 
-    public Task<Country> GetCountryByCode(string countryCode);
+    public Task<Country> GetCountryByCode(string countryCode, int year);
 }

@@ -54,7 +54,7 @@ public class HolidayScheduleServiceTests
         var mockCountryService = new Mock<ICountryService>();
 
         // Setup: CountryService returns our Ukraine record.
-        mockCountryService.Setup(cs => cs.GetCountryByCode(It.Is<string>(s => s.Equals("UKR", StringComparison.OrdinalIgnoreCase))))
+        mockCountryService.Setup(cs => cs.GetCountryByCode(It.Is<string>(s => s.Equals("UKR", StringComparison.OrdinalIgnoreCase)), It.IsAny<int>()))
                           .ReturnsAsync(country);
 
         // Setup: ProcessedHolidaysChunk repository returns an empty list (i.e. chunk not yet processed).

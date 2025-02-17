@@ -3,8 +3,10 @@ using Core.Interfaces;
 using DataAccess;
 using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using PublicHolidaysApiTestTask;
 using WebApi.Controllers;
+using WebApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,7 @@ builder.Services
     .AddControllers(options =>
     {
         options.SuppressAsyncSuffixInActionNames = false;
+        options.Filters.Add<HttpResponseExceptionFilter>();
     })
     .AddJsonOptions(jsonOptions =>
     {
@@ -35,6 +38,17 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddApplicationServices();
 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Holiday API", 
+        Version = "v1",
+        Description = "API providing country holidays and day status"
+    });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,6 +56,12 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Holiday API V1");
+    c.RoutePrefix = "swagger"; 
+});
 app.UseHttpsRedirection();
 app.MapControllers();
 

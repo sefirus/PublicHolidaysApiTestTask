@@ -2,6 +2,8 @@ using System.Runtime.InteropServices.JavaScript;
 using Core.Entities;
 using Core.Enums;
 using Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -65,7 +67,7 @@ public class HolidayScheduleService : IHolidayScheduleService
     /// </param>
     public async Task ProcessHolidayChunkAsync(string countryCode, int targetYear, int? chunkSize = null)
     {
-        var country = await _countryService.GetCountryByCode(countryCode);
+        var country = await _countryService.GetCountryByCode(countryCode, targetYear);
 
         var years = CalculateEffectiveChunkBoundaries(targetYear, chunkSize ?? _defaultChunkSize, country);
         int chunkStartYear = years.CommonStart;
@@ -100,7 +102,11 @@ public class HolidayScheduleService : IHolidayScheduleService
         });
 
         // Pre-fetch all existing holidays for this country.
-        var existingHolidays = (await _holidayRepository.QueryAsync(h => h.CountryId == country.Id)).ToList();
+        var existingHolidays = await _holidayRepository
+            .QueryAsync(filter: h => h.CountryId == country.Id,
+                include: include => include
+                    .Include(h => h.Names)
+                    .Include(h => h.Occurrences));
         // Build a lookup dictionary keyed by composite key "HolidayType|PrimaryName".
         var holidayLookup = existingHolidays.ToDictionary(
             h => $"{h.HolidayType}|{h.Names.First(n => n.Lang == "en").Text}",

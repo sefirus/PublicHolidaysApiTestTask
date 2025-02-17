@@ -55,7 +55,7 @@ public class CountryService : ICountryService
             return result;
         }
 
-        public async Task<Country> GetCountryByCode(string countryCode)
+        public async Task<Country> GetCountryByCode(string countryCode, int year)
         {
             var countriesCount = await _countryRepository.GetQuery(asNoTracking: true).CountAsync();
             if (countriesCount == 0)
@@ -64,11 +64,16 @@ public class CountryService : ICountryService
             }
             var country = await _countryRepository.GetFirstOrDefaultAsync(
                 asNoTracking: true, 
-                filter:c => c.CountryCode3Digit.ToLower() == countryCode.ToLower() 
+                filter:c =>  c.CountryCode3Digit.ToLower() == countryCode.ToLower() 
                     || c.CountryCode2Digit.ToLower() == countryCode.ToLower());
             if (country is null)
             {
                 throw new CountryNotFoundExceptions($"Country {countryCode} not found.");
+            }
+
+            if (country.FromDate.Year > year || country.ToDate.Year < year)
+            {
+                throw new DatesNotSupportedException($"Year {year} for country {countryCode} is not supported.");
             }
             return country;
         }
