@@ -9,5 +9,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IExternalHolidayApiService, ExternalHolidayApiService>();
         services.AddScoped<ICountryService, CountryService>();
+        services.AddScoped<IHolidayScheduleService, HolidayScheduleService>();
     }
 }

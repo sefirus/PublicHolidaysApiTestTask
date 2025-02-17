@@ -1,6 +1,8 @@
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
 using Core.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
@@ -21,7 +23,7 @@ public class CountryService : ICountryService
         /// Returns a list of supported countries.
         /// If there are none in the DB, fetch from the external API, map, store, and then return.
         /// </summary>
-        public async Task<List<CountryViewModel>> GetAllCountriesAsync()
+        public async Task<List<CountryViewModel>> GetAllCountries()
         {
             var countries = await _countryRepository.QueryAsync(asNoTracking: true);
 
@@ -31,7 +33,7 @@ public class CountryService : ICountryService
                 var externalCountries = await _externalApiService.GetCountries();
 
                 var countryEntities = externalCountries
-                    .Select(ext => MapExternalCountryToDomain(ext))
+                    .Select(MapExternalCountryToDomain)
                     .ToList();
 
                 await _countryRepository.Insert(countryEntities);
@@ -53,6 +55,25 @@ public class CountryService : ICountryService
             return result;
         }
 
+        public async Task<Country> GetCountryByCode(string countryCode)
+        {
+            var countriesCount = await _countryRepository.GetQuery(asNoTracking: true).CountAsync();
+            if (countriesCount == 0)
+            {
+                _ = await GetAllCountries();
+            }
+            var country = await _countryRepository.GetFirstOrDefaultAsync(
+                asNoTracking: true, 
+                filter:c => c.CountryCode3Digit.ToLower() == countryCode.ToLower() 
+                    || c.CountryCode2Digit.ToLower() == countryCode.ToLower());
+            if (country is null)
+            {
+                throw new CountryNotFoundExceptions($"Country {countryCode} not found.");
+            }
+            return country;
+        }
+
+        //TODO: better move to AutoMapper or some custom mapper
         /// <summary>
         /// Maps an external country (3-letter code) to our DB Country model.
         /// Converts the 3-digit code to 2-digit code using the ISO3166 library.
