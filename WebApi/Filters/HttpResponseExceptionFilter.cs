@@ -22,7 +22,9 @@ public class HttpResponseExceptionFilter : ExceptionFilterAttribute
             // For any other unhandled exception, return a 500 Internal Server Error.
             context.Result = new ObjectResult(new
             {
-                error = "An unexpected error occurred."
+                error = "An unexpected error occurred.",
+                message = context.Exception.Message,
+                trace = context.Exception.StackTrace
             })
             {
                 StatusCode = 500
