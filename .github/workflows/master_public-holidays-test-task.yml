@@ -55,4 +55,8 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CA47B252A7124DEB9D9C628C13CFC674 }}
           package: .
-          app-settings: '{"ConnectionStrings__SqlServerConnection": "${{ secrets.ConnectionStrings__SqlServerConnection }}"}'
+      - name: Set App Settings with Azure CLI
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp config appsettings set --name public-holidays-test-task --resource-group WebApps --settings "ConnectionStrings__SqlServerConnection=${{ secrets.CONNECTIONSTRINGS__SQLSERVERCONNECTION }}"
